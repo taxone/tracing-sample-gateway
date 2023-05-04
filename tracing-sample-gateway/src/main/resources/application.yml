@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: tracing-sample-gateway
+  cloud:
+    gateway:
+      routes:
+      - id: test
+        uri: https://httpbin.org
+        predicates:
+        - Path=/api/**
+        filters:
+        - name: RewritePath
+          args:
+            regexp: /api(?<segment>/?.*)
+            replacement: $\{segment}
+            
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"    
+  level:
+     '[reactor.netty.http]': debug  
+  
+management:
+  tracing:
+    propagation:
+      type: b3  
